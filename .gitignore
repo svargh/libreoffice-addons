@@ -1,0 +1,23 @@
+# Maven / Java
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# LibreOffice temporary files
+.~lock.*#
+*.tmp
+
+# Docker/Maven cache used by LibreOfficeRest/tools/build-libreoffice-rest-docker.sh
+.m2-docker/*
+!.m2-docker/.gitkeep

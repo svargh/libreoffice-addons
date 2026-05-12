@@ -1,0 +1,48 @@
+name: LibreOfficeRest OXT
+
+on:
+  push:
+    branches: [stable, test]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build OXT in Docker
+        run: |
+          ./LibreOfficeRest/tools/build-libreoffice-rest-docker.sh clean package -DskipTests=true -DskipITs=true
+
+      - name: Prepare OXT
+        run: |
+          mkdir -p dist
+          OXT="$(find LibreOfficeRest/target -maxdepth 1 -name 'LibreOfficeRest-*.oxt' | head -n 1)"
+          test -f "$OXT"
+          cp "$OXT" dist/LibreOfficeRest.oxt
+          ls -lh dist/LibreOfficeRest.oxt
+
+      - name: Upload OXT artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibreOfficeRest.oxt
+          path: dist/LibreOfficeRest.oxt
+          if-no-files-found: error
+
+      - name: Publish latest stable release
+        if: github.ref_name == 'stable'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="libreoffice-rest-latest"
+          git tag -f "$TAG" "$GITHUB_SHA"
+          git push -f origin "$TAG"
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" --title "LibreOfficeRest latest" --notes "Latest stable LibreOfficeRest OXT."
+          gh release upload "$TAG" dist/LibreOfficeRest.oxt --clobber

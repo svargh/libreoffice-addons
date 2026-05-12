@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.libreoffice.rest</groupId>
+    <artifactId>LibreOfficeRest</artifactId>
+    <version>1.26.0512</version>
+    <packaging>jar</packaging>
+
+    <name>LibreOfficeRest</name>
+    <description>LibreOffice Calc Java Add-In for generic REST calls and JSONPath extraction.</description>
+    <url>https://github.com/svargh/libreoffice-addons/tree/main/LibreOfficeRest</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+
+        <!-- Compile-only UNO API. Do not shade this into the extension JAR. -->
+        <libreoffice.java.version>26.2.2</libreoffice.java.version>
+
+        <!-- Spring Framework 6.x is used intentionally, not Spring Boot. -->
+        <spring.framework.version>6.2.18</spring.framework.version>
+        <jsonpath.version>2.10.0</jsonpath.version>
+        <jackson.version>2.21.3</jackson.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <cfr.version>0.152</cfr.version>
+        <junit.jupiter.version>5.11.4</junit.jupiter.version>
+        <skipITs>false</skipITs>
+        <skipUnoGeneration>true</skipUnoGeneration>
+
+        <oxt.finalName>LibreOfficeRest-${project.version}</oxt.finalName>
+        <oxt.staging.dir>${project.build.directory}/oxt-staging</oxt.staging.dir>
+        <uno.generated.dir>${project.build.directory}/generated-uno</uno.generated.dir>
+        <uno.generated.class.dir>${project.build.outputDirectory}</uno.generated.class.dir>
+        <uno.rdb.file>${uno.generated.dir}/LibreOfficeRest.rdb</uno.rdb.file>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.libreoffice</groupId>
+            <artifactId>libreoffice</artifactId>
+            <version>${libreoffice.java.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${jsonpath.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- Avoid noisy SLF4J provider warnings inside LibreOffice. -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <plugins>
+            <!-- Generate the UNO type library and javamaker Java UNO .class files from the same IDL. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-uno-types-and-java</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipUnoGeneration}</skip>
+                            <executable>${project.basedir}/tools/generate-uno.sh</executable>
+                            <arguments>
+                                <argument>${project.basedir}/src/main/idl/org/libreoffice/rest/XLibreOfficeRest.idl</argument>
+                                <argument>${uno.generated.dir}</argument>
+                                <argument>${uno.rdb.file}</argument>
+                                <argument>${uno.generated.class.dir}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>decompile-uno-interface-dev-mirror</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipUnoGeneration}</skip>
+                            <includeProjectDependencies>false</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <mainClass>org.benf.cfr.reader.Main</mainClass>
+                            <arguments>
+                                <argument>${project.build.outputDirectory}/org/libreoffice/rest/XLibreOfficeRest.class</argument>
+                                <argument>--outputdir</argument>
+                                <argument>${project.basedir}/src-generated/java</argument>
+                                <argument>--clobber</argument>
+                                <argument>true</argument>
+                                <argument>--silent</argument>
+                                <argument>true</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.benf</groupId>
+                        <artifactId>cfr</artifactId>
+                        <version>${cfr.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <skipITs>${skipITs}</skipITs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Create one fat JAR with Spring WebClient + JsonPath + all non-LibreOffice dependencies. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>all</shadedClassifierName>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <RegistrationClassName>org.libreoffice.rest.LibreOfficeRestAddIn</RegistrationClassName>
+                                        <UNO-Type-Path>LibreOfficeRest.jar</UNO-Type-Path>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Assemble the LibreOffice extension .oxt. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>package-oxt</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipUnoGeneration}</skip>
+                            <target name="package-oxt">
+                                <delete dir="${oxt.staging.dir}"/>
+                                <mkdir dir="${oxt.staging.dir}"/>
+                                <mkdir dir="${oxt.staging.dir}/META-INF"/>
+
+                                <copy todir="${oxt.staging.dir}">
+                                    <fileset dir="${project.basedir}/src/main/oxt"/>
+                                </copy>
+
+                                <copy file="${uno.rdb.file}" tofile="${oxt.staging.dir}/LibreOfficeRest.rdb"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}-all.jar"
+                                      tofile="${oxt.staging.dir}/LibreOfficeRest.jar"/>
+
+                                <zip destfile="${project.build.directory}/${oxt.finalName}.oxt"
+                                     basedir="${oxt.staging.dir}"/>
+
+                                <echo message="Built LibreOffice extension: ${project.build.directory}/${oxt.finalName}.oxt"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <profiles>
+        <!-- Default profile: quick local/IDE tests without a local LibreOffice SDK. -->
+        <profile>
+            <id>dev-source</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skipUnoGeneration>true</skipUnoGeneration>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-dev-uno-interface-source</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>${project.basedir}/src-generated/java</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Docker/release profile: use real LibreOffice SDK javamaker output. -->
+        <profile>
+            <id>uno-sdk-build</id>
+            <properties>
+                <skipUnoGeneration>false</skipUnoGeneration>
+            </properties>
+        </profile>
+    </profiles>
+
+</project>

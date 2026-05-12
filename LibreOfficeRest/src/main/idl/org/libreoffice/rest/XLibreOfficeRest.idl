@@ -1,0 +1,89 @@
+#include <com/sun/star/uno/XInterface.idl>
+#include <com/sun/star/beans/XPropertySet.idl>
+#include <com/sun/star/sheet/AddIn.idl>
+
+module org { module libreoffice { module rest {
+
+interface XLibreOfficeRest : com::sun::star::uno::XInterface
+{
+    string PING(
+        [in] com::sun::star::beans::XPropertySet xOptions);
+
+    string RESTINFO(
+        [in] com::sun::star::beans::XPropertySet xOptions);
+
+    string JAVAVERSION(
+        [in] com::sun::star::beans::XPropertySet xOptions);
+
+    string LASTERROR(
+        [in] com::sun::star::beans::XPropertySet xOptions);
+
+    string HTTPGET(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string url);
+
+    string HTTPGETREFRESH(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string url,
+        [in] any refreshKey);
+
+    string HTTPGETDEBUG(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string url);
+
+    string HTTPGETHEADER(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string url,
+        [in] string headerName,
+        [in] string headerValue);
+
+    string HTTPGETHEADERS(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string url,
+        [in] string headers);
+
+    string HTTPPOST(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string url,
+        [in] string body,
+        [in] string contentType);
+
+    string HTTPPOSTHEADER(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string url,
+        [in] string body,
+        [in] string contentType,
+        [in] string headerName,
+        [in] string headerValue);
+
+    string JSONPATH(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string json,
+        [in] string path);
+
+    double JSONNUMBER(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string json,
+        [in] string path);
+
+    double JSONBOOL(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string json,
+        [in] string path);
+
+    double JSONVALID(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string json);
+
+    string URLENCODE(
+        [in] com::sun::star::beans::XPropertySet xOptions,
+        [in] string text);
+};
+
+service LibreOfficeRest
+{
+    interface XLibreOfficeRest;
+    service com::sun::star::sheet::AddIn;
+};
+
+}; }; };

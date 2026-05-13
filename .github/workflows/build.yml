@@ -62,7 +62,7 @@ jobs:
 
           FILES=(
             "LibreOfficeRest/pom.xml"
-            "LibreOfficeRest/src/main/resources/description.xml"
+            "LibreOfficeRest/src/main/oxt/description.xml"
           )
 
           for FILE in "${FILES[@]}"; do

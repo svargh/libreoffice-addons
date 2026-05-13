@@ -1,3 +1,5 @@
+![icon-base.svg](icon-base.svg)
+
 # libreoffice-addons
 
 Small AI generated LibreOffice add-ons collected in one repository.
@@ -10,7 +12,7 @@ Small AI generated LibreOffice add-ons collected in one repository.
 ## Extension LibreOfficeRest
 `LibreOfficeRest/`  
 Calc Java Add-In for REST calls using SpringWebclient and JSONPath extraction.    
-Generated using ChatGPT Pro - Extended Thinking
+
 
 Example 1:
 ![screenshot1.png](LibreOfficeRest/screenshot1.png)

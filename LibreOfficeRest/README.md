@@ -1,3 +1,5 @@
+![icon.svg](icon.svg)
+
 # LibreOfficeRest
 
 LibreOffice Calc Add-In for REST APIs and JSONPath extraction.

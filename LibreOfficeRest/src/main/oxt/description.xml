@@ -9,6 +9,15 @@
     <publisher>
         <name xlink:href="https://github.com/svargh/libreoffice-addons" lang="en">svargh</name>
     </publisher>
+    <icon>
+        <default xlink:href="description/images/icon-42.png"/>
+        <high-contrast xlink:href="description/images/icon-42.png"/>
+    </icon>
+    <registration>
+        <simple-license accept-by="admin" suppress-on-update="true">
+            <license-text xlink:href="licenses/LICENSE-en.txt" lang="en"/>
+        </simple-license>
+    </registration>
     <dependencies>
         <l:LibreOffice-minimal-version value="4.1" d:name="LibreOffice 4.1"
                 xmlns:d="http://openoffice.org/extensions/description/2006"

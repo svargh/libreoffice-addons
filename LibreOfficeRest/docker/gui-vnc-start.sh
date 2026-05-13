@@ -195,7 +195,7 @@ fi
 
 echo "Installing extension: ${OXT_PATH}"
 unopkg remove org.libreoffice.rest.LibreOfficeRest >"/tmp/unopkg-remove.log" 2>&1 || true
-unopkg add --force "$OXT_PATH" >"/tmp/unopkg-add.log" 2>&1 || {
+unopkg add --force --suppress-license "$OXT_PATH" >"/tmp/unopkg-add.log" 2>&1 || {
   echo "Extension install failed; see /tmp/unopkg-add.log" >&2
   cat /tmp/unopkg-add.log >&2 || true
   exit 1

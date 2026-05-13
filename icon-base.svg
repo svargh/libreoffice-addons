@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LibreOffice Addons base icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f6f7f9"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#5b21b6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="14" y="14" width="228" height="228" rx="38" fill="url(#bg)" stroke="#d8dde3" stroke-width="4"/>
+
+  <g transform="translate(0, -4)">
+    <path d="M70 82 L120 53 L120 111 L70 140 Z" fill="#1f2937"/>
+    <path d="M136 53 L186 82 L186 140 L136 111 Z" fill="url(#purple)"/>
+    <path d="M78 160 L128 131 L178 160 L128 190 Z" fill="#111827"/>
+    <path d="M128 104 L158 121 L158 156 L128 173 L98 156 L98 121 Z" fill="#ffffff"/>
+    <path d="M128 112 L151 125 L151 151 L128 164 L105 151 L105 125 Z" fill="url(#purple)" opacity="0.95"/>
+  </g>
+</svg>

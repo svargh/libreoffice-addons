@@ -144,7 +144,17 @@ jobs:
             --notes "Latest stable LibreOfficeRest OXT. Download file uses the concrete version number." \
             --latest=false
 
-          gh release upload "$TAG" "dist/$VERSION_FILE" --clobber
+          OLD_ASSETS="$(
+            gh release view "$TAG" --json assets \
+              --jq '.assets[] | select(.name | endswith(".oxt")) | .name'
+          )"
+
+          for ASSET in $OLD_ASSETS; do
+            echo "Deleting old OXT asset from $TAG: $ASSET"
+            gh release delete-asset "$TAG" "$ASSET" -y
+          done
+
+          gh release upload "$TAG" "dist/$VERSION_FILE"
 
       - name: Publish main latest release
         if: github.ref_name == 'main'

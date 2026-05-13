@@ -6,7 +6,7 @@
 
     <groupId>org.libreoffice.rest</groupId>
     <artifactId>LibreOfficeRest</artifactId>
-    <version>1.26.0512</version>
+    <version>1.26.05</version>
     <packaging>jar</packaging>
 
     <name>LibreOfficeRest</name>

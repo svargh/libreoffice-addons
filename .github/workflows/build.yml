@@ -2,7 +2,7 @@ name: LibreOfficeRest OXT
 
 on:
   push:
-    branches: [stable, test]
+    branches: [stable, main, test]
   workflow_dispatch:
 
 permissions:
@@ -62,16 +62,16 @@ jobs:
           fi
 
           VERSION="$PREFIX.$NEXT_NUM"
-          TAG="libreoffice-rest-$VERSION"
-          FILE="LibreOfficeRest-$VERSION.oxt"
+          VERSION_TAG="libreoffice-rest-$VERSION"
+          VERSION_FILE="LibreOfficeRest-$VERSION.oxt"
 
-          cp dist/LibreOfficeRest.oxt "dist/$FILE"
+          cp dist/LibreOfficeRest.oxt "dist/$VERSION_FILE"
 
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          echo "VERSION_TAG=$TAG" >> "$GITHUB_ENV"
-          echo "VERSION_FILE=$FILE" >> "$GITHUB_ENV"
+          echo "VERSION_TAG=$VERSION_TAG" >> "$GITHUB_ENV"
+          echo "VERSION_FILE=$VERSION_FILE" >> "$GITHUB_ENV"
 
-      - name: Publish concrete stable release
+      - name: Publish concrete stable version release
         if: github.ref_name == 'stable'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -84,13 +84,36 @@ jobs:
             --notes "Stable LibreOfficeRest OXT release $VERSION." \
             --latest=true
 
-      - name: Publish latest stable release
+      - name: Publish stable latest release with versioned file
         if: github.ref_name == 'stable'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="libreoffice-rest-latest"
-          FILE="LibreOfficeRest-latest.oxt"
+          TAG="libreoffice-rest-latest-stable"
+
+          git tag -f "$TAG" "$GITHUB_SHA"
+          git push -f origin "$TAG"
+
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" \
+              --title "LibreOfficeRest stable latest" \
+              --notes "Latest stable LibreOfficeRest OXT. File is concrete-versioned." \
+              --latest=false
+
+          gh release edit "$TAG" \
+            --title "LibreOfficeRest stable latest" \
+            --notes "Latest stable LibreOfficeRest OXT. File is concrete-versioned." \
+            --latest=false
+
+          gh release upload "$TAG" "dist/$VERSION_FILE" --clobber
+
+      - name: Publish main latest release
+        if: github.ref_name == 'main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="libreoffice-rest-latest-main"
+          FILE="LibreOfficeRest-main.oxt"
 
           cp dist/LibreOfficeRest.oxt "dist/$FILE"
 
@@ -99,9 +122,13 @@ jobs:
 
           gh release view "$TAG" >/dev/null 2>&1 || \
             gh release create "$TAG" \
-              --title "LibreOfficeRest latest" \
-              --notes "Latest stable LibreOfficeRest OXT." \
+              --title "NonStable Latest from branch main" \
+              --notes "Latest non-stable LibreOfficeRest OXT from branch main." \
               --latest=false
 
-          gh release edit "$TAG" --latest=false
+          gh release edit "$TAG" \
+            --title "NonStable Latest from branch main" \
+            --notes "Latest non-stable LibreOfficeRest OXT from branch main." \
+            --latest=false
+
           gh release upload "$TAG" "dist/$FILE" --clobber

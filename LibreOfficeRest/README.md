@@ -137,3 +137,4 @@ Pass an explicit `.oxt` if needed:
 ```bash
 ./LibreOfficeRest/tools/run-libreoffice-rest-gui-vnc.sh LibreOfficeRest/target/LibreOfficeRest-1.2026.05.12.oxt
 ```
+

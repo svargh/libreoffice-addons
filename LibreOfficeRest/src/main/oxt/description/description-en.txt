@@ -1,0 +1,5 @@
+LibreOfficeRest adds Calc functions for generic REST API access and real JSONPath parsing.
+
+Example:
+  =HTTPGET("https://api.kraken.com/0/public/Ticker?pair=XBTEUR")
+  =JSONNUMBER(A1;"$.result.XXBTZEUR.c[0]")

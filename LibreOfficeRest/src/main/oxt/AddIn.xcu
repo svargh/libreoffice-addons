@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
+                    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    oor:name="CalcAddIns"
+                    oor:package="org.openoffice.Office">
+    <node oor:name="AddInInfo">
+        <node oor:name="org.libreoffice.rest.LibreOfficeRest" oor:op="replace">
+            <node oor:name="AddInFunctions">
+                <node oor:name="PING" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">PING</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Returns a simple diagnostic string if the LibreOfficeRest Java add-in can be loaded and called.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">PING</value></prop>
+                </node>
+
+                <node oor:name="JAVAVERSION" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">JAVAVERSION</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Returns the Java runtime version used by LibreOffice for this add-in.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">JAVAVERSION</value></prop>
+                </node>
+
+                <node oor:name="RESTINFO" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">RESTINFO</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Returns diagnostic information about the loaded LibreOfficeRest add-in.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">RESTINFO</value></prop>
+                </node>
+
+                <node oor:name="LASTERROR" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">LASTERROR</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Returns the last LibreOfficeRest error message captured by a function call.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">LASTERROR</value></prop>
+                </node>
+
+                <node oor:name="HTTPGET" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">HTTPGET</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Performs an HTTP GET request and returns the response body as text.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">HTTPGET</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="url" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">URL</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">HTTP or HTTPS URL to request.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="HTTPGETREFRESH" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">HTTPGETREFRESH</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Performs an HTTP GET request and uses RefreshKey as a dependency trigger so Calc can force immediate recalculation.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">HTTPGETREFRESH</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="url" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">URL</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">HTTP or HTTPS URL to request.</value></prop>
+                        </node>
+                        <node oor:name="refreshKey" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">RefreshKey</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Any value used only as a dependency trigger, for example NOW(), RAND(), or a counter cell.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="HTTPGETDEBUG" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">HTTPGETDEBUG</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Performs an HTTP GET request and returns diagnostic details instead of only the response body.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">HTTPGETDEBUG</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="url" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">URL</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">HTTP or HTTPS URL to request.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="HTTPGETHEADER" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">HTTPGETHEADER</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Performs an HTTP GET request with one custom header.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">HTTPGETHEADER</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="url" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">URL</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">HTTP or HTTPS URL to request.</value></prop>
+                        </node>
+                        <node oor:name="headerName" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">HeaderName</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Header name, for example Authorization.</value></prop>
+                        </node>
+                        <node oor:name="headerValue" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">HeaderValue</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Header value, for example Bearer token.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="HTTPGETHEADERS" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">HTTPGETHEADERS</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Performs an HTTP GET request with headers given as name=value lines or semicolon-separated entries.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">HTTPGETHEADERS</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="url" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">URL</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">HTTP or HTTPS URL to request.</value></prop>
+                        </node>
+                        <node oor:name="headers" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">Headers</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Headers as Name=Value lines, Name: Value lines, or semicolon-separated entries.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="HTTPPOST" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">HTTPPOST</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Performs an HTTP POST request and returns the response body as text.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">HTTPPOST</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="url" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">URL</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">HTTP or HTTPS URL to request.</value></prop>
+                        </node>
+                        <node oor:name="body" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">Body</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Request body text.</value></prop>
+                        </node>
+                        <node oor:name="contentType" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">ContentType</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Content type, for example application/json.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="HTTPPOSTHEADER" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">HTTPPOSTHEADER</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Performs an HTTP POST request with one custom header.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">HTTPPOSTHEADER</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="url" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">URL</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">HTTP or HTTPS URL to request.</value></prop>
+                        </node>
+                        <node oor:name="body" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">Body</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Request body text.</value></prop>
+                        </node>
+                        <node oor:name="contentType" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">ContentType</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Content type, for example application/json.</value></prop>
+                        </node>
+                        <node oor:name="headerName" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">HeaderName</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Header name.</value></prop>
+                        </node>
+                        <node oor:name="headerValue" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">HeaderValue</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Header value.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="JSONPATH" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">JSONPATH</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Evaluates a JSONPath expression and returns the result as text.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">JSONPATH</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="json" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">JSON</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">JSON text.</value></prop>
+                        </node>
+                        <node oor:name="path" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">Path</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">JSONPath expression, for example $.result.XXBTZEUR.c[0].</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="JSONNUMBER" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">JSONNUMBER</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Evaluates a JSONPath expression and returns the result as a number.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">JSONNUMBER</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="json" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">JSON</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">JSON text.</value></prop>
+                        </node>
+                        <node oor:name="path" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">Path</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">JSONPath expression whose result is numeric.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="JSONBOOL" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">JSONBOOL</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Evaluates a JSONPath expression and returns 1 for true or 0 for false.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">JSONBOOL</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="json" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">JSON</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">JSON text.</value></prop>
+                        </node>
+                        <node oor:name="path" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">Path</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">JSONPath expression whose result is boolean-like.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="JSONVALID" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">JSONVALID</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">Returns 1 if the text is valid JSON and 0 otherwise.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">JSONVALID</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="json" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">JSON</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">JSON text to validate.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+                <node oor:name="URLENCODE" oor:op="replace">
+                    <prop oor:name="DisplayName"><value xml:lang="en">URLENCODE</value></prop>
+                    <prop oor:name="Description"><value xml:lang="en">URL-encodes text using UTF-8.</value></prop>
+                    <prop oor:name="Category"><value>Add-In</value></prop>
+                    <prop oor:name="CompatibilityName"><value xml:lang="en">URLENCODE</value></prop>
+                    <node oor:name="Parameters">
+                        <node oor:name="text" oor:op="replace">
+                            <prop oor:name="DisplayName"><value xml:lang="en">Text</value></prop>
+                            <prop oor:name="Description"><value xml:lang="en">Text to encode for URL query parameters.</value></prop>
+                        </node>
+                    </node>
+                </node>
+
+            </node>
+        </node>
+    </node>
+</oor:component-data>

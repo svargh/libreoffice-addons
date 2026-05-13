@@ -1,0 +1,181 @@
+name: LibreOfficeRest OXT
+
+on:
+  push:
+    branches: [stable, main, test]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create stable version
+        if: github.ref_name == 'stable'
+        id: version
+        run: |
+          MAJOR="1"
+          YY="$(date +%y)"
+          MM="$(date +%m)"
+          PREFIX="$MAJOR.$YY.$MM"
+
+          git fetch --tags
+
+          LAST_NUM="$(
+            git tag -l "libreoffice-rest-$PREFIX.*" \
+              | sed "s/^libreoffice-rest-$PREFIX\.//" \
+              | grep -E '^[0-9]+$' \
+              | sort -n \
+              | tail -1
+          )"
+
+          if [ -z "$LAST_NUM" ]; then
+            NEXT_NUM="001"
+          else
+            NEXT_NUM="$(printf "%03d" $((10#$LAST_NUM + 1)))"
+          fi
+
+          VERSION="$PREFIX.$NEXT_NUM"
+          VERSION_TAG="libreoffice-rest-$VERSION"
+          VERSION_FILE="LibreOfficeRest-$VERSION.oxt"
+
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "VERSION_TAG=$VERSION_TAG" >> "$GITHUB_ENV"
+          echo "VERSION_FILE=$VERSION_FILE" >> "$GITHUB_ENV"
+
+          echo "Stable version: $VERSION"
+          echo "Stable tag:     $VERSION_TAG"
+          echo "Stable file:    $VERSION_FILE"
+
+      - name: Patch whitelisted stable version files
+        if: github.ref_name == 'stable'
+        run: |
+          PLACEHOLDER="1.0.0-SNAPSHOT"
+
+          FILES=(
+            "LibreOfficeRest/pom.xml"
+            "LibreOfficeRest/src/main/oxt/description.xml"
+          )
+
+          for FILE in "${FILES[@]}"; do
+            test -f "$FILE" || {
+              echo "Missing whitelisted version file: $FILE"
+              exit 1
+            }
+
+            grep -q "$PLACEHOLDER" "$FILE" || {
+              echo "Placeholder $PLACEHOLDER not found in whitelisted file: $FILE"
+              exit 1
+            }
+
+            sed -i "s/$PLACEHOLDER/$VERSION/g" "$FILE"
+            echo "Patched $FILE to version $VERSION"
+          done
+
+      - name: Build OXT in Docker
+        run: |
+          ./LibreOfficeRest/tools/build-libreoffice-rest-docker.sh clean package -DskipTests=true -DskipITs=true
+
+      - name: Prepare OXT
+        run: |
+          mkdir -p dist
+          OXT="$(find LibreOfficeRest/target -maxdepth 1 -name 'LibreOfficeRest-*.oxt' | head -n 1)"
+          test -f "$OXT"
+
+          if [ "${{ github.ref_name }}" = "stable" ]; then
+            cp "$OXT" "dist/$VERSION_FILE"
+            cp "$OXT" dist/LibreOfficeRest.oxt
+            ls -lh "dist/$VERSION_FILE" dist/LibreOfficeRest.oxt
+          elif [ "${{ github.ref_name }}" = "main" ]; then
+            cp "$OXT" dist/LibreOfficeRest-main.oxt
+            cp "$OXT" dist/LibreOfficeRest.oxt
+            ls -lh dist/LibreOfficeRest-main.oxt dist/LibreOfficeRest.oxt
+          else
+            cp "$OXT" dist/LibreOfficeRest.oxt
+            ls -lh dist/LibreOfficeRest.oxt
+          fi
+
+      - name: Upload OXT artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibreOfficeRest.oxt
+          path: dist/LibreOfficeRest.oxt
+          if-no-files-found: error
+
+      - name: Publish concrete stable version release
+        if: github.ref_name == 'stable'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git tag "$VERSION_TAG" "$GITHUB_SHA"
+          git push origin "$VERSION_TAG"
+
+          gh release create "$VERSION_TAG" "dist/$VERSION_FILE" \
+            --title "LibreOfficeRest $VERSION" \
+            --notes "Stable LibreOfficeRest OXT release $VERSION." \
+            --latest=true
+
+      - name: Publish stable latest release with versioned file
+        if: github.ref_name == 'stable'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="libreoffice-rest-latest-stable"
+
+          git tag -f "$TAG" "$GITHUB_SHA"
+          git push -f origin "$TAG"
+
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" \
+              --title "LibreOfficeRest stable latest" \
+              --notes "Latest stable LibreOfficeRest OXT. Download file uses the concrete version number." \
+              --latest=false
+
+          gh release edit "$TAG" \
+            --title "LibreOfficeRest stable latest" \
+            --notes "Latest stable LibreOfficeRest OXT. Download file uses the concrete version number." \
+            --latest=false
+
+          OLD_ASSETS="$(
+            gh release view "$TAG" --json assets \
+              --jq '.assets[] | select(.name | endswith(".oxt")) | .name'
+          )"
+
+          for ASSET in $OLD_ASSETS; do
+            echo "Deleting old OXT asset from $TAG: $ASSET"
+            gh release delete-asset "$TAG" "$ASSET" -y
+          done
+
+          gh release upload "$TAG" "dist/$VERSION_FILE"
+
+      - name: Publish main latest release
+        if: github.ref_name == 'main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="libreoffice-rest-latest-main"
+          FILE="LibreOfficeRest-main.oxt"
+
+          git tag -f "$TAG" "$GITHUB_SHA"
+          git push -f origin "$TAG"
+
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" \
+              --title "NonStable Latest from branch main" \
+              --notes "Latest non-stable LibreOfficeRest OXT from branch main." \
+              --latest=false
+
+          gh release edit "$TAG" \
+            --title "NonStable Latest from branch main" \
+            --notes "Latest non-stable LibreOfficeRest OXT from branch main." \
+            --latest=false
+
+          gh release upload "$TAG" "dist/$FILE" --clobber
